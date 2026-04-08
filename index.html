@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLEVANOS.COM — Próximamente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --yellow: #FFE500;
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --gray: #2a2a2a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--yellow);
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease;
+        }
+
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: var(--yellow);
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.3;
+            transition: transform 0.3s ease, width 0.3s, height 0.3s;
+        }
+
+        .cursor.hover {
+            transform: scale(2);
+        }
+
+        .cursor-follower.hover {
+            transform: scale(1.5);
+            opacity: 0.5;
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255,229,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,229,0,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            z-index: 2;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--yellow);
+            transition: width 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 120px 40px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--black);
+            padding: 8px 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 4px solid var(--black);
+            box-shadow: 6px 6px 0 var(--black);
+            transform: rotate(-2deg);
+            margin-bottom: 40px;
+            align-self: flex-start;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: rotate(-2deg) scale(1); }
+            50% { transform: rotate(-2deg) scale(1.05); }
+        }
+
+        .hero-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(4rem, 15vw, 12rem);
+            line-height: 0.85;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-title span {
+            display: block;
+            position: relative;
+        }
+
+        .hero-title .line-1 {
+            -webkit-text-stroke: 2px var(--white);
+            color: transparent;
+        }
+
+        .hero-title .line-2 {
+            color: var(--yellow);
+            text-shadow: 8px 8px 0 var(--black), -2px -2px 0 var(--gray);
+        }
+
+        .hero-title .line-3 {
+            font-size: 0.5em;
+            letter-spacing: 0.1em;
+            color: var(--white);
+            margin-top: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin-top: 40px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 40px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 4px solid var(--black);
+            cursor: none;
+            transition: all 0.2s cubic-bezier(0.77, 0, 0.175, 1);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--yellow);
+            color: var(--black);
+            box-shadow: 8px 8px 0 var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 var(--white);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+            box-shadow: 8px 8px 0 var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--white);
+            color: var(--black);
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 var(--yellow);
+        }
+
+        /* Floating Elements */
+        .float-element {
+            position: absolute;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 3rem;
+            color: var(--yellow);
+            opacity: 0.1;
+            pointer-events: none;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .float-1 { top: 20%; right: 10%; animation-delay: 0s; }
+        .float-2 { top: 60%; right: 20%; animation-delay: 2s; font-size: 2rem; }
+        .float-3 { bottom: 20%; left: 5%; animation-delay: 4s; font-size: 4rem; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        /* Marquee Section */
+        .marquee-section {
+            background: var(--yellow);
+            border-top: 4px solid var(--black);
+            border-bottom: 4px solid var(--black);
+            padding: 30px 0;
+            overflow: hidden;
+            transform: rotate(-1deg);
+            margin: 60px -20px;
+        }
+
+        .marquee {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee-content {
+            display: flex;
+            gap: 60px;
+            padding-right: 60px;
+        }
+
+        .marquee-item {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 2rem;
+            color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            position: relative;
+        }
+
+        .section-header {
+            margin-bottom: 80px;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--black);
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border: 3px solid var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--gray);
+            border: 4px solid var(--black);
+            padding: 40px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--yellow);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 0;
+        }
+
+        .feature-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translate(-8px, -8px);
+            box-shadow: 16px 16px 0 var(--yellow);
+        }
+
+        .feature-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+
+        .feature-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .feature-card:hover .feature-title,
+        .feature-card:hover .feature-desc {
+            color: var(--black);
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.7);
+            transition: color 0.3s;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 100px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            border-top: 4px solid var(--yellow);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 40px;
+            border: 4px solid var(--black);
+            background: var(--yellow);
+            box-shadow: 8px 8px 0 var(--black);
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: rotate(-2deg) scale(1.05);
+            box-shadow: 12px 12px 0 var(--black);
+        }
+
+        .stat-number {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 4rem;
+            color: var(--black);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--black);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Newsletter Section */
+        .newsletter {
+            padding: 120px 40px;
+            background: var(--yellow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter::before {
+            content: 'LLEVANOS';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 20vw;
+            color: var(--black);
+            opacity: 0.05;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .newsletter-content {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .newsletter-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            color: var(--black);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .newsletter-text {
+            font-size: 1.2rem;
+            color: var(--black);
+            margin-bottom: 40px;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 0;
+            border: 4px solid var(--black);
+            box-shadow: 8px 8px 0 var(--black);
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            background: var(--white);
+            color: var(--black);
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--gray);
+        }
+
+        .newsletter-button {
+            padding: 20px 40px;
+            background: var(--black);
+            color: var(--yellow);
+            border: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            cursor: none;
+            transition: all 0.2s;
+        }
+
+        .newsletter-button:hover {
+            background: var(--gray);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 40px;
+            border-top: 4px solid var(--yellow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-logo {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .footer-text {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-link {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--yellow);
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--yellow);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--white);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(35px, 9999px, 11px, 0); }
+            20% { clip: rect(88px, 9999px, 96px, 0); }
+            40% { clip: rect(12px, 9999px, 64px, 0); }
+            60% { clip: rect(67px, 9999px, 23px, 0); }
+            80% { clip: rect(45px, 9999px, 78px, 0); }
+            100% { clip: rect(91px, 9999px, 33px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 91px, 0); }
+            20% { clip: rect(23px, 9999px, 45px, 0); }
+            40% { clip: rect(78px, 9999px, 12px, 0); }
+            60% { clip: rect(11px, 9999px, 67px, 0); }
+            80% { clip: rect(56px, 9999px, 88px, 0); }
+            100% { clip: rect(33px, 9999px, 65px, 0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 100px 20px 40px;
+            }
+
+            .hero-title {
+                font-size: clamp(3rem, 12vw, 6rem);
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .features {
+                padding: 60px 20px;
+            }
+
+            .stats {
+                padding: 60px 20px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .footer {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 20px;
+            }
+        }
+
+        /* Scroll Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Background -->
+    <div class="grid-bg"></div>
+    <div class="noise"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-logo">LLEVANOS.COM</div>
+        <div class="nav-links">
+            <a href="#features" class="nav-link">Características</a>
+            <a href="#contacto" class="nav-link">Contacto</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="float-element float-1">★</div>
+            <div class="float-element float-2">✦</div>
+            <div class="float-element float-3">⬡</div>
+
+            <div class="hero-badge reveal">Próximamente 2025</div>
+
+            <h1 class="hero-title reveal">
+                <span class="line-1 glitch" data-text="EL FUTURO">EL FUTURO</span>
+                <span class="line-2 reveal">DEL VIAJE</span>
+                <span class="line-3 reveal">Está en camino</span>
+            </h1>
+
+            <p class="hero-subtitle reveal">
+                La plataforma de venta de boletos para transporte en México que va a cambiar la forma en que te movés. Simple, rápido, sin complicaciones.
+            </p>
+
+            <div class="hero-cta reveal">
+                <a href="#contacto" class="btn btn-primary">
+                    <span>Recibir Alerta</span>
+                    <span>→</span>
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <span>Conocer Más</span>
+                    <span>↓</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Marquee -->
+        <div class="marquee-section">
+            <div class="marquee">
+                <div class="marquee-content">
+                    <span class="marquee-item">México →</span>
+                    <span class="marquee-item">Boletos Digitales →</span>
+                    <span class="marquee-item">Sin Filas →</span>
+                    <span class="marquee-item">Mejores Precios →</span>
+                    <span class="marquee-item">Rutas Nacionales →</span>
+                    <span class="marquee-item">México →</span>
+                    <span class="marquee-item">Boletos Digitales →</span>
+                    <span class="marquee-item">Sin Filas →</span>
+                    <span class="marquee-item">Mejores Precios →</span>
+                    <span class="marquee-item">Rutas Nacionales →</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="section-header">
+                <div class="section-label reveal">¿Qué viene?</div>
+                <h2 class="section-title reveal">
+                    <span style="color: var(--yellow);">TODO</span> LO QUE NECESITÁS
+                </h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🎫</div>
+                    <h3 class="feature-title">Boletos Digitales</h3>
+                    <p class="feature-desc">Comprá y recibí tu boleto directo en tu teléfono. Sin papel, sin complicaciones. QR listo para escanear.</p>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Compra Express</h3>
+                    <p class="feature-desc">Proceso de compra en menos de 60 segundos. Compará rutas, elegí asiento, pagá y listo.</p>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Mejores Precios</h3>
+                    <p class="feature-desc">Compará precios de múltiples transportistas en un solo lugar. Encontrá la mejor opción siempre.</p>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">📍</div>
+                    <h3 class="feature-title">Rutas Nacionales</h3>
+                    <p class="feature-desc">Cobertura en todo México. Desde Tijuana hasta Cancún, conectamos el país.</p>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Pagos Seguros</h3>
+                    <p class="feature-desc">Múltiples métodos de pago con encriptación de nivel bancario. Tu dinero, protegido.</p>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">App Nativa</h3>
+                    <p class="feature-desc">Experiencia optimizada para iOS y Android. Notificaciones en tiempo real y gestión de viajes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stat-item reveal">
+                <div class="stat-number" data-count="32">0</div>
+                <div class="stat-label">Estados</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number" data-count="500">0</div>
+                <div class="stat-label">Rutas</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number" data-count="50">0</div>
+                <div class="stat-label">Transportistas</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number" data-count="0">0</div>
+                <div class="stat-label">Comisión</div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter" id="contacto">
+            <div class="newsletter-content">
+                <h2 class="newsletter-title reveal">Sé el primero</h2>
+                <p class="newsletter-text reveal">
+                    Dejanos tu email y te avisamos cuando arranque. Los primeros usuarios tienen beneficios exclusivos.
+                </p>
+                <form class="newsletter-form reveal" onsubmit="event.preventDefault(); alert('¡Gracias! Te avisamos cuando estemos listos.');">
+                    <input type="email" class="newsletter-input" placeholder="tu@email.com" required>
+                    <button type="submit" class="newsletter-button">Avisame</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">LLEVANOS.COM</div>
+            <div class="footer-text">© 2025 Llevanos. Todos los derechos reservados.</div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Instagram</a>
+                <a href="#" class="footer-link">Twitter</a>
+                <a href="#" class="footer-link">LinkedIn</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+
+            cursor.style.left = cursorX - 10 + 'px';
+            cursor.style.top = cursorY - 10 + 'px';
+            cursorFollower.style.left = followerX - 20 + 'px';
+            cursorFollower.style.top = followerY - 20 + 'px';
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effect on interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, .btn, .feature-card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                cursorFollower.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                cursorFollower.classList.remove('hover');
+            });
+        });
+
+        // Scroll Reveal Animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                    }, index * 100);
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Counter Animation
+        const statNumbers = document.querySelectorAll('.stat-number');
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.getAttribute('data-count'));
+                    animateCounter(entry.target, target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        statNumbers.forEach(el => counterObserver.observe(el));
+
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target === 0 ? '0%' : target + '+';
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + '+';
+                }
+            }, 30);
+        }
+
+        // Parallax effect on float elements
+        document.addEventListener('mousemove', (e) => {
+            const floatElements = document.querySelectorAll('.float-element');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            floatElements.forEach((el, index) => {
+                const speed = (index + 1) * 20;
+                const xOffset = (0.5 - x) * speed;
+                const yOffset = (0.5 - y) * speed;
+                el.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+            });
+        });
+
+        // Glitch effect randomizer
+        setInterval(() => {
+            const glitch = document.querySelector('.glitch');
+            glitch.style.animation = 'none';
+            setTimeout(() => {
+                glitch.style.animation = '';
+            }, 100);
+        }, 5000);
+
+        // Marquee speed based on scroll
+        let lastScrollY = 0;
+        const marquee = document.querySelector('.marquee');
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const speed = 20 - (scrollY - lastScrollY) * 0.1;
+            marquee.style.animationDuration = Math.max(5, Math.min(30, speed)) + 's';
+            lastScrollY = scrollY;
+        });
+    </script>
+</body>
+</html>
